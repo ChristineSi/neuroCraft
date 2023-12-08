@@ -26,7 +26,7 @@ raw_data/
 # Data in the package
 # Add files you want to include in the git repo using `git add -f file_name`
 data/
-
+db
 # Saved models
 models/
 *.joblib
@@ -43,6 +43,7 @@ models/
 .credentials
 secrets.toml
 *.json
+*.log
 
 # User defined extras
 # Complete to your desire
