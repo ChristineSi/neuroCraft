@@ -1,33 +1,65 @@
-# Example: Dummy model for illustration purposes
 import re
 import string
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from keras.preprocessing.text import text_to_word_sequence
+# for other files, use -> from text_preprocessor import TextPreprocessor
+#                         tp = TextPreprocessor()
+#                         preprocessed_text = tp.preprocess("This is a sample text.")
 
-def preprocess_text(text):
-    """
-    Preprocesses the input text for dyslexia classification and text simplification.
+class TextPreprocessor:
+    def __init__(self):
+        self.stopwords = set(stopwords.words('english'))
+        self.lemmatizer = WordNetLemmatizer()
 
-    Args:
-    - text (str): Input text.
+    def basic_cleaning(self, sentence):
+        sentence = sentence.lower()
+        sentence = ''.join(char for char in sentence if not char.isdigit())
+        # Adding special quotes to the regular expression pattern
+        special_quotes = '“”‘’'
+        pattern = '[' + re.escape(string.punctuation + special_quotes) + ']'
+        sentence = re.sub(pattern, '', sentence)
+        sentence = sentence.strip()
+        return sentence
 
-    Returns:
-    - str: Preprocessed text.
-    """
-    # Remove punctuation and digits
-    text = re.sub(f"[{string.punctuation}{string.digits}]", "", text)
+    def tokenize(self, sentence):
+        return text_to_word_sequence(sentence)
 
-    # Tokenize the text
-    tokens = word_tokenize(text)
+    def lemmatize(self, sentence):
+        verbs_lemmatized = [self.lemmatizer.lemmatize(word, pos='v') for word in sentence]
+        nouns_lemmatized = [self.lemmatizer.lemmatize(word, pos='n') for word in verbs_lemmatized]
+        adverbs_lemmatized = [self.lemmatizer.lemmatize(word, pos='r') for word in nouns_lemmatized]
+        adj_lemmatized = [self.lemmatizer.lemmatize(word, pos='a') for word in adverbs_lemmatized]
+        sat_lemmatized = [self.lemmatizer.lemmatize(word, pos='a') for word in adj_lemmatized]
+        return sat_lemmatized
 
-    # Remove stop words
-    stop_words = set(stopwords.words("english"))
-    tokens = [word for word in tokens if word.lower() not in stop_words]
+#    def lemmatizer(sentence):
+        wnl = WordNetLemmatizer()
+        verbs_lemmatized = []
+        for word in sentence:
+            verbs_lemmatized.append(wnl.lemmatize(word, pos = 'v'))
+        nouns_lemmatized = []
+        for word in verbs_lemmatized:
+            nouns_lemmatized.append(wnl.lemmatize(word, pos = 'n'))
+        adverbs_lemmatized = []
+        for word in nouns_lemmatized:
+            adverbs_lemmatized.append(wnl.lemmatize(word, pos = 'r'))
+        adj_lemmatized = []
+        for word in adverbs_lemmatized:
+            adj_lemmatized.append(wnl.lemmatize(word, pos = 'a'))
+        sat_lemmatized = []
+        for word in adj_lemmatized:
+            sat_lemmatized.append(wnl.lemmatize(word, pos = 'a'))
+        return sat_lemmatized
 
-    # Join the tokens back into a string
-    preprocessed_text = " ".join(tokens)
+    def remove_stopwords(self, sentence):
+        return [word for word in sentence if word not in self.stopwords]
 
-    return preprocessed_text
+    def preprocess(self, text):
+        text = self.basic_cleaning(text)
+        text = self.tokenize(text)
+        text = self.lemmatize(text)
+        text = self.remove_stopwords(text)
+        return text
