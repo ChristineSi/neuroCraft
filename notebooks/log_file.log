@@ -56,3 +56,5 @@
 2023-12-08 14:11:29,768:INFO: Epoch: 0 | iter: 5600 | avg. train loss: 0.0003367182112466295 | time elapsed: 5277.5413382053375
 2023-12-08 14:12:55,877:INFO: Epoch: 0 | iter: 5700 | avg. train loss: 0.0004525009471231167 | time elapsed: 5363.650081157684
 2023-12-08 14:14:21,132:INFO: Epoch: 0 | iter: 5800 | avg. train loss: 0.0001063259504575385 | time elapsed: 5448.905261039734
+2023-12-08 14:15:45,351:INFO: Epoch: 0 | iter: 5900 | avg. train loss: 6.947256062245789e-06 | time elapsed: 5533.124352931976
+2023-12-08 14:17:09,953:INFO: Epoch: 0 | iter: 6000 | avg. train loss: 3.0355629242725125e-06 | time elapsed: 5617.72652387619
