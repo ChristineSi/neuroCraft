@@ -48,3 +48,4 @@
 2023-12-08 14:00:06,462:INFO: Epoch: 0 | iter: 4800 | avg. train loss: 6.085758302638732e-06 | time elapsed: 4594.234980106354
 2023-12-08 14:01:33,360:INFO: Epoch: 0 | iter: 4900 | avg. train loss: 0.03295819446533692 | time elapsed: 4681.132971048355
 2023-12-08 14:02:58,901:INFO: Epoch: 0 | iter: 5000 | avg. train loss: 0.0004294332677600937 | time elapsed: 4766.673690795898
+2023-12-08 14:04:22,629:INFO: Epoch: 0 | iter: 5100 | avg. train loss: 0.00010995356129220717 | time elapsed: 4850.402491807938
