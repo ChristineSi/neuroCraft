@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware #do we include middleware? ask TA
-#from your_module import classify_text, simplify_text  # Import your functions
+from backend.dyslexia_classifier.utils import chunk_text, extract_text_from_pdf, extract_text_from_website
+from backend.dyslexia_classifier.models.combined_model import CombinedModel
+from backend.dyslexia_classifier.data import DyslexiaData
 
 app = FastAPI()
 
@@ -15,6 +17,8 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+model = CombinedModel(input_shape_text, input_dim_num, labels_dict)
+
 # Endpoint for dyslexia classification
 @app.post("/classify-dyslexia")
 def classify_dyslexia(text: str):
@@ -28,8 +32,18 @@ def classify_dyslexia(text: str):
     - result: The classification result.
     """
     try:
-        result = classify_text(text)
-        return {"result": result}
+        if text.endswith('.pdf'):
+            text = extract_text_from_pdf(text)
+        elif text.startswith('http'):
+            text = extract_text_from_website(text)
+        chunks = chunk_text(text)
+        results = []
+        for chunk in chunks:
+            # Preprocess your text and extract features
+            dyslexia_data = DyslexiaData(chunk)
+            X_test_text = dyslexia_data.preprocess_text(chunk)
+            prediction = model.predict(X_test_text)
+            results.append(prediction)
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
@@ -38,13 +52,14 @@ def classify_dyslexia(text: str):
 @app.post("/simplify-text")
 def simplify_text_endpoint(text: str):
     """
-    Endpoint to simplify text for dyslexia readers.
+    This endpoint takes a string of text as input and returns a simplified version of the text.
+    The simplification process is designed to make the text easier to read for dyslexic readers.
 
     Parameters:
-    - text: The text to be simplified.
+    text (str): The text to be simplified. This should be a string of text.
 
     Returns:
-    - result: The simplified text.
+    dict: A dictionary with a single key-value pair. The key is 'result' and the value is the simplified text (str).
     """
     try:
         simplified_text = simplify_text(text)
