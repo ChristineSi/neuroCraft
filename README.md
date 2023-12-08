@@ -1,9 +1,9 @@
-# Project Name
-- Document your project here
-- Description
-- Data used
-- Where your API can be accessed
-- ...
+# neuroCraft
+**LeWagon** - Data Science Project.
+<br>
+<br>
+Simplifying the lifes of neurodivergent learners.
+
 
 # API
 Document main API endpoints here
