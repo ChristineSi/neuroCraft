@@ -47,3 +47,4 @@
 2023-12-08 13:58:39,289:INFO: Epoch: 0 | iter: 4700 | avg. train loss: 0.0005920168241265328 | time elapsed: 4507.061638832092
 2023-12-08 14:00:06,462:INFO: Epoch: 0 | iter: 4800 | avg. train loss: 6.085758302638732e-06 | time elapsed: 4594.234980106354
 2023-12-08 14:01:33,360:INFO: Epoch: 0 | iter: 4900 | avg. train loss: 0.03295819446533692 | time elapsed: 4681.132971048355
+2023-12-08 14:02:58,901:INFO: Epoch: 0 | iter: 5000 | avg. train loss: 0.0004294332677600937 | time elapsed: 4766.673690795898
