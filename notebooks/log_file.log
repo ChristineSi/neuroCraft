@@ -49,3 +49,10 @@
 2023-12-08 14:01:33,360:INFO: Epoch: 0 | iter: 4900 | avg. train loss: 0.03295819446533692 | time elapsed: 4681.132971048355
 2023-12-08 14:02:58,901:INFO: Epoch: 0 | iter: 5000 | avg. train loss: 0.0004294332677600937 | time elapsed: 4766.673690795898
 2023-12-08 14:04:22,629:INFO: Epoch: 0 | iter: 5100 | avg. train loss: 0.00010995356129220717 | time elapsed: 4850.402491807938
+2023-12-08 14:05:47,322:INFO: Epoch: 0 | iter: 5200 | avg. train loss: 5.744980210381021e-06 | time elapsed: 4935.094642877579
+2023-12-08 14:07:14,443:INFO: Epoch: 0 | iter: 5300 | avg. train loss: 5.517252102201367e-06 | time elapsed: 5022.21649312973
+2023-12-08 14:08:38,463:INFO: Epoch: 0 | iter: 5400 | avg. train loss: 3.580977965003639e-05 | time elapsed: 5106.236610174179
+2023-12-08 14:10:03,186:INFO: Epoch: 0 | iter: 5500 | avg. train loss: 9.698552198872752e-06 | time elapsed: 5190.958763122559
+2023-12-08 14:11:29,768:INFO: Epoch: 0 | iter: 5600 | avg. train loss: 0.0003367182112466295 | time elapsed: 5277.5413382053375
+2023-12-08 14:12:55,877:INFO: Epoch: 0 | iter: 5700 | avg. train loss: 0.0004525009471231167 | time elapsed: 5363.650081157684
+2023-12-08 14:14:21,132:INFO: Epoch: 0 | iter: 5800 | avg. train loss: 0.0001063259504575385 | time elapsed: 5448.905261039734
