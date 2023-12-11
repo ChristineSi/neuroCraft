@@ -3,7 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import nltk
-import PyPDF2
+from PyPDF2 import PdfReader
 import requests
 from bs4 import BeautifulSoup
 from neurocraft.params import *
@@ -39,26 +39,27 @@ def chunk_text(text, max_chunk_size=200):
     Split a long excerpt into chunks of a specified size while preserving sentence boundaries.
 
     Args:
-    - excerpt (str): Input excerpt.
+    - text (str): Input text.
     - max_chunk_size (int): Maximum number of words in each chunk.
 
     Returns:
-    - list: List of excerpt chunks.
+    - list: List of text chunks.
     """
-    sentences = nltk.sent_tokenize(text)
+    words = text.split()
     chunks = []
+    current_chunk = ""
 
-    current_chunk = sentences[0]
-
-    for sentence in sentences[1:]:
-        if len(current_chunk.split()) + len(sentence.split()) <= max_chunk_size:
-            current_chunk += ' ' + sentence
+    for word in words:
+        # Check if adding the current word exceeds the max_chunk_size
+        if len(current_chunk.split()) + 1 <= max_chunk_size:
+            current_chunk += ' ' + word
         else:
-            chunks.append(current_chunk)
-            current_chunk = sentence
+            # Add the current chunk to the list
+            chunks.append(current_chunk.strip())
+            current_chunk = word
 
     # Add the last chunk
-    chunks.append(current_chunk)
+    chunks.append(current_chunk.strip())
 
     return chunks
 
@@ -73,18 +74,16 @@ def extract_text_from_pdf(file_path):
     - str: Text extracted from the PDF.
     """
     try:
-        pdf_file_obj = open(file_path, 'rb')
-        pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
-        text = ''
-        for page_num in range(pdf_reader.numPages):
-            page_obj = pdf_reader.getPage(page_num)
-            text += page_obj.extractText()
+        with open(file_path, 'rb') as file:
+            pdf_reader = PdfReader(file)
+            text = ''
+            for page_num in range(len(pdf_reader.pages)):
+                page = pdf_reader.pages[page_num]
+                text += page.extract_text()
         return text
     except Exception as e:
         print(f"Error extracting text from PDF: {e}")
         return None
-    finally:
-        pdf_file_obj.close()
 
 def extract_text_from_website(url):
     """
