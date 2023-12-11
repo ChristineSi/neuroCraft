@@ -6,13 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from neurocraft.backend.text_simplification.simplification_model import TextSimplificationModel
 from neurocraft.utils import extract_text_from_pdf, extract_text_from_website, chunk_text
 #from neurocraft.backend.dyslexia_classifier.classification_model import NLPModel
-from neurocraft.backend.dyslexia_classifier.mock_model import MockModel
-
+#from neurocraft.backend.dyslexia_classifier.mock_model import MockModel
+from interface.main import pred, load_model
 app = FastAPI()
 #app.state.model
 
 # Create instances of the classification and simplification models
-mock_model = MockModel()
+model = load_model()
 openai.api_key = os.getenv("API_KEY")
 simplification_model = TextSimplificationModel()
 
@@ -28,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-'''
+
 # Endpoint for dyslexia classification
 @app.get("/classify-dyslexia")
 async def classify_dyslexia(
@@ -49,25 +49,39 @@ async def classify_dyslexia(
 
         # If the content is a PDF file, extract text using your function
         if file and file.filename.endswith('.pdf'):
-            content = extract_text_from_pdf(content)
+            pdf_text = extract_text_from_pdf(content)
+            if pdf_text:
+                content = pdf_text
+            else:
+                raise HTTPException(status_code=500, detail="Error extracting text from PDF")
 
-        # Split the content into chunks
+        print(f"Original Text: {content}")
+
+        # Split the content into chunks using chunk_text
         chunks = chunk_text(content)
+        print(f"Number of Chunks: {len(chunks)}")
 
         # Initialize an empty list to store classification results for each chunk
         results = []
 
         # Iterate through each chunk and classify
-        for chunk in chunks:
-            prediction = mock_model.predict(chunk)
-            results.append(prediction)
+        for i, chunk in enumerate(chunks):
+            try:
+                # Perform classification or other processing on each chunk
+                # For now, let's just append the chunk to results
+                results.append({"chunk_index": i, "chunk": chunk})
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Error processing chunk {i}: {chunk}. Error details: {str(e)}")
 
         # Return the aggregated results
         return {"classification_results": results}
+    except HTTPException as e:
+        raise e  # Let FastAPI handle HTTP exceptions with proper responses
     except Exception as e:
+        # Print the full traceback of the exception
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
-
+'''
 # Endpoint for text simplification
 @app.get("/simplify-text")
 async def simplify_text(
@@ -110,7 +124,7 @@ async def simplify_text(
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
 
-'''
+
 # Endpoint for dyslexia classification with text simplification
 @app.get("/classify-simplify-dyslexia")
 async def classify_simplify_dyslexia(
@@ -137,24 +151,31 @@ async def classify_simplify_dyslexia(
         chunks = chunk_text(content)
 
         # Initialize an empty list to store results for each chunk
-        simplified_texts = []
+        results = []
 
         for chunk in chunks:
             try:
+                dyslexia_prediction = pred(model, chunk)  # Use the dyslexia classification function with the loaded model
                 simplified_text = simplification_model.simplify_text(chunk)
-                simplified_texts.append(simplified_text)
+
+                print(f"Chunk: {chunk}")
+                print(f"Dyslexia Prediction: {dyslexia_prediction}")
+                print(f"Simplified Text: {simplified_text}")
+
+                results.append({
+                    "chunk": chunk,
+                    "dyslexia_classification": dyslexia_prediction,
+                    "simplified_text": simplified_text
+                })
             except Exception as e:
-                # Handle exceptions for individual chunks
-                error_message = f"Error simplifying chunk: {chunk}. Exception details: {str(e)}"
-                print(error_message)
-                simplified_texts.append({"error": error_message})
+                print(f"Error processing chunk: {chunk}")
+                print(f"Exception details: {traceback.format_exc()}")
 
-        return {"simplified_texts": simplified_texts}
-
+        return {"results": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+'''
 # Default endpoint
 @app.get("/")
 def root():
