@@ -29,7 +29,7 @@ def preprocess_train_test_data(data):
     data = data.drop(columns=drop_columns)
 
     # Calculating quantiles for bin edges
-    quantiles = data['BT Easiness']..quantile([0, 0.3333, 0.6667, 1]).tolist()
+    quantiles = data['BT Easiness'].quantile([0, 0.3333, 0.6667, 1]).tolist()
 
     # Correct number of labels for 3 bins
     labels_dict = {'hard':0, 'acceptable':1, 'easy':2}
@@ -61,7 +61,7 @@ def define_X_y(data):
     """
     Defines the X and y variables for the model.
     """
-    X = data['Excerpt'].values
+    X = data['Excerpt']
     y = data['BT Easiness']
     return X, y
 
@@ -69,8 +69,8 @@ def split_data(X, y):
     """
     Splits the data into training and testing sets.
     """
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train_text, X_test_text, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     # Separate the 'Excerpt' column from the training and testing sets
-    X_train_text = X_train['Excerpt'].values
-    X_test_text = X_test['Excerpt'].values
+    X_train_text = X_train_text.values
+    X_test_text = X_test_text.values
     return X_train_text, X_test_text, y_train, y_test
