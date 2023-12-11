@@ -29,3 +29,7 @@ bs4
 openai==0.28.0
 python-multipart
 traceback
+pathlib
+colorama
+transformers
+torch
