@@ -19,7 +19,7 @@ fastapi
 uvicorn
 
 
-#from .py
+# from .py
 textstat
 lexicalrichness
 nltk
