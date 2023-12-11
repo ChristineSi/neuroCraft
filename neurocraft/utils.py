@@ -34,9 +34,9 @@ def split_data(data, test_size=0.2, random_state=42):
     train_df, test_df = train_test_split(data, test_size=test_size, random_state=random_state)
     return train_df, test_df
 
-def chunk_text(excerpt, max_chunk_size=200):
+def chunk_text(text, max_chunk_size=200):
     """
-    Split a long excerpt into chunks of a specified size.
+    Split a long excerpt into chunks of a specified size while preserving sentence boundaries.
 
     Args:
     - excerpt (str): Input excerpt.
@@ -45,8 +45,21 @@ def chunk_text(excerpt, max_chunk_size=200):
     Returns:
     - list: List of excerpt chunks.
     """
-    words = nltk.word_tokenize(excerpt)
-    chunks = [' '.join(words[i:i+max_chunk_size]) for i in range(0, len(words), max_chunk_size)]
+    sentences = nltk.sent_tokenize(text)
+    chunks = []
+
+    current_chunk = sentences[0]
+
+    for sentence in sentences[1:]:
+        if len(current_chunk.split()) + len(sentence.split()) <= max_chunk_size:
+            current_chunk += ' ' + sentence
+        else:
+            chunks.append(current_chunk)
+            current_chunk = sentence
+
+    # Add the last chunk
+    chunks.append(current_chunk)
+
     return chunks
 
 def extract_text_from_pdf(file_path):
@@ -91,15 +104,3 @@ def extract_text_from_website(url):
     except Exception as e:
         print(f"Error extracting text from website: {e}")
         return None
-
-#def compute_precision(y_true, y_pred):
-    #return precision_score(y_true, y_pred)
-
-#def compute_recall(y_true, y_pred):
-    #return recall_score(y_true, y_pred)
-
-#def load_data_from_csv(file_path):
-    #return pd.read_csv(file_path)
-
-#def save_data_to_csv(df, file_path):
-    #df.to_csv(file_path, index=False)
