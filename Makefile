@@ -8,6 +8,29 @@ install_requirements:
 install:
 	@pip install . -U
 
+reinstall_package:
+	@pip uninstall -y neurocraft || :
+	@pip install -e .
+
+# Data sources: targets for monthly data imports
+ML_DIR=~/.lewagon/neuroCraft
+
+reset_local_files:
+	rm -rf ${ML_DIR}
+	mkdir -p ~/.lewagon/neuroCraft/data/
+	mkdir ~/.lewagon/neuroCraft/data/raw
+	mkdir ~/.lewagon/neuroCraft/data/processed
+	mkdir ~/.lewagon/neuroCraft/training_outputs
+	mkdir ~/.lewagon/neuroCraft/training_outputs/metrics
+	mkdir ~/.lewagon/neuroCraft/training_outputs/models
+	mkdir ~/.lewagon/neuroCraft/training_outputs/params
+
+run_training_flow:
+	python -c 'from interface.main import training_flow; training_flow()'
+
+run_pred:
+	python -c 'from interface.main import pred; pred()'
+
 clean:
 	@rm -f */version.txt
 	@rm -f .coverage
