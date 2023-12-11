@@ -42,7 +42,7 @@ def preprocess_train_test_data(data):
         include_lowest=True
     )
 
-    return self.data
+    return data
 
 def preprocess_text(text):
     # Preprocess the text using the methods from the TextPreprocessor class
@@ -61,7 +61,7 @@ def define_X_y(data):
     """
     Defines the X and y variables for the model.
     """
-    X = data.drop(columns=['BT Easiness'])
+    X = data['Excerpt'].values
     y = data['BT Easiness']
     return X, y
 

@@ -20,3 +20,6 @@ PREFECT_LOG_LEVEL = os.environ.get("PREFECT_LOG_LEVEL")
 EVALUATION_START_DATE = os.environ.get("EVALUATION_START_DATE")
 GAR_IMAGE = os.environ.get("GAR_IMAGE")
 GAR_MEMORY = os.environ.get("GAR_MEMORY")
+
+##################  CONSTANTS  #####################
+LOCAL_DATA_PATH = os.path.join(os.path.expanduser('~'), ".lewagon", "neuroCraft", "data")
