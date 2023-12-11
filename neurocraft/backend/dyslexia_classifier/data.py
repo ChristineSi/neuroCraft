@@ -88,8 +88,8 @@ class DyslexiaData:
         y = self.data['BT Easiness']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         # Separate the 'Excerpt' column from the training and testing sets
-        X_train_text = X_train['Excerpt']
-        X_test_text = X_test['Excerpt']
+        X_train_text = X_train['Excerpt'].values
+        X_test_text = X_test['Excerpt'].values
         return X_train_text, X_test_text, y_train, y_test
 
     def embed_and_pad_data(self, X_train_text, X_test_text):
