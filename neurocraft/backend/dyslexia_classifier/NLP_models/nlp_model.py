@@ -13,16 +13,13 @@ from tensorflow.keras.regularizers import l1_l2, l2
 # for other files, use -> from nlp_model import NLPModel
 
 class NLPModel:
-    def __init__(self, X_train_text, y_train, X_test_text, y_test):
-        self.X_train_text = X_train_text
-        self.y_train = y_train
-        self.X_test_text = X_test_text
-        self.y_test = y_test
+    def __init__(self, X, y):
+        self.X = X
+        self.y = y
         self.model = self.build_model()
         self.es = EarlyStopping(patience=10, restore_best_weights=True)
         self.reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
         self.lr_scheduler = LearningRateScheduler(self.scheduler)
-        self.trained_model = self.train()
 
     def scheduler(self, epoch, lr):
         if epoch < 10:
@@ -30,8 +27,8 @@ class NLPModel:
         else:
             return lr * tf.math.exp(-0.1)
 
-    def build_model(self):
-        input_nlp = layers.Input(shape=self.X_train_text.shape[1:])
+    def build_model(self, input_shape=self.X.shape[1:]):
+        input_nlp = layers.Input(shape=input_shape)
         x = layers.Bidirectional(layers.LSTM(32, kernel_constraint=MaxNorm(3), return_sequences=True, kernel_regularizer=l2(0.01)))(input_nlp)
         x = layers.Dropout(0.5)(x)
         x = layers.Bidirectional(layers.LSTM(16, kernel_constraint=MaxNorm(3), kernel_regularizer=l2(0.01)))(x)
@@ -48,20 +45,22 @@ class NLPModel:
 
     def train(self):
         history = self.model.fit(
-            self.X_train_text, self.y_train,
+            self.X, self.y,
             validation_split=0.3,
             epochs=50,
             batch_size=32,
             callbacks=[self.es, self.reduce_lr, self.lr_scheduler]
         )
-        return model
+        print(f"✅ Model trained on {len(self.X)} rows with max val accuracy: {round(np.max(history.history['val_accuracy']), 2)}")
 
-    def evaluate(self):
-        loss, accuracy = self.model.evaluate(self.X_test_text, self.y_test)
+        return self.model, history
+
+    def evaluate(self, X_test_text, y_test):
+        loss, accuracy = self.model.evaluate(X_test_text, y_test)
         print(f'Test loss: {loss:.4f}')
         print(f'Test accuracy: {accuracy:.4f}')
 
     def predict(self, text):
-        predictions = self.trained_model.predict(text)
+        predictions = self.model.predict(text)
         class_labels_predictions = np.argmax(predictions, axis=1)
         return class_labels_predictions

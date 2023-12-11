@@ -12,7 +12,6 @@ from neurocraft.params import *
 class DyslexiaData:
     def __init__(self, file_path):
         self.file_path = file_path
-        self.data = self.load_data()
         self.text_preprocessor = TextPreprocessor()
         self.embedding_creator = EmbeddingCreator()
 
@@ -25,13 +24,13 @@ class DyslexiaData:
         df = pd.read_csv(self.file_path)
         return df
 
-    def preprocess_data(self):
+    def preprocess_train_test_data(self, data):
         """
         Preprocesses the input text for dyslexia classification and text simplification.
         """
         drop_columns = ['Last Changed', 'URL', 'Anthology', 'MPAA \n#Max', 'Pub Year', 'MPAA\n#Avg', 'License', 'British Words', 'firstPlace_pred', 'secondPlace_pred', 'thirdPlace_pred',
        'fourthPlace_pred', 'fifthPlace_pred', 'sixthPlace_pred', 'ID', 'Author', 'Title', 'Source', 'Category', 'Location', 'MPAA\nMax', 'BT s.e.', 'Kaggle split']
-        self.data = self.data.drop(columns=drop_columns)
+        self.data = data.drop(columns=drop_columns)
 
         # Calculating quantiles for bin edges
         quantiles = self.data['BT Easiness']..quantile([0, 0.3333, 0.6667, 1]).tolist()
@@ -55,23 +54,27 @@ class DyslexiaData:
         return text
 
 
-    def split_data(self):
+    def embed_data(self, text):
         """
-        Splits the data into training and testing sets.
+        Converts the text data into word embeddings and pads the sequences.
+        """
+        text = self.embedding_creator.create_embeddings(text)
+        return text
+
+    def define_X_y(self):
+        """
+        Defines the X and y variables for the model.
         """
         X = self.data.drop(columns=['BT Easiness'])
         y = self.data['BT Easiness']
+        return X, y
+
+    def split_data(self, X, y):
+        """
+        Splits the data into training and testing sets.
+        """
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         # Separate the 'Excerpt' column from the training and testing sets
         X_train_text = X_train['Excerpt'].values
         X_test_text = X_test['Excerpt'].values
         return X_train_text, X_test_text, y_train, y_test
-
-    def embed_data(self, X_train_text, X_test_text):
-        """
-        Converts the text data into word embeddings and pads the sequences.
-        """
-
-        X_train_text = self.embedding_creator.create_embeddings(X_train_text)
-        X_test_text = self.embedding_creator.create_embeddings(X_test_text)
-        return X_train_text, X_test_text
