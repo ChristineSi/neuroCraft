@@ -26,3 +26,5 @@ nltk
 PyPDF2
 requests
 bs4
+openai==0.28.0
+python-multipart
