@@ -1,10 +1,18 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware #do we include middleware? ask TA
-from neurocraft.utils import chunk_text, extract_text_from_pdf, extract_text_from_website
-from neurocraft.backend.dyslexia_classifier.NLP_models.combined_model import CombinedModel
-from neurocraft.backend.dyslexia_classifier.data import DyslexiaData
+from fastapi.middleware.cors import CORSMiddleware
+#from model import YourDyslexiaModel, YourSimplificationModel
+
+#from neurocraft.utils import chunk_text, extract_text_from_pdf, extract_text_from_website
+#from neurocraft.backend.dyslexia_classifier.NLP_models.combined_model import CombinedModel
+#from neurocraft.backend.dyslexia_classifier.data import DyslexiaData
 
 app = FastAPI()
+#app.state.model
+
+# Create instances of the dyslexia and simplification models
+# Replace YourDyslexiaModel and YourSimplificationModel with the actual names of your model classes
+#dyslexia_model = YourDyslexiaModel()
+#simplification_model = YourSimplificationModel()
 
 # Middleware in FastAPI is code that runs befre processing the request and after processing the response
 # CORS: Cross-Origin Resource Sharing
@@ -17,65 +25,88 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-dyslexia_data = DyslexiaData("raw_data/CLEAR Corpus 6.01 - CLEAR Corpus 6.01.csv")
-dyslexia_data.load_data()
-dyslexia_data.preprocess_data()
-X_train_num, X_test_num, X_train_text, X_test_text, y_train, y_test = dyslexia_data.split_data()
-X_train_pad, X_test_pad = dyslexia_data.embed_and_pad_data(X_train_text, X_test_text)
+# Store submitted texts in a list for demonstration purposes
+stored_texts = []
 
-# Create the CombinedModel instance with the loaded or preprocessed data
-input_dim = X_train_pad.shape[1]
-labels_dict = {'very hard': 0, 'hard': 1, 'moderately hard': 2, 'acceptable': 3, 'easy': 4, 'very easy': 5}
-model = CombinedModel(X_train_pad, input_dim, labels_dict)
+# Endpoint to add text to the API
+@app.post("/add-text")
+def add_text(text: str):
+    """
+    Endpoint to add text to the API.
+
+    Parameters:
+    - text: The text to be added.
+
+    Returns:
+    - message: A confirmation message.
+    """
+    try:
+        # Store the submitted text
+        stored_texts.append(text)
+        return {"message": "Text added successfully."}
+    except Exception as e:
+        # Handle exceptions, e.g., input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Endpoint to retrieve stored texts (for testing purposes)
+@app.get("/get-stored-texts")
+def get_stored_texts():
+    """
+    Endpoint to retrieve stored texts (for testing purposes).
+
+    Returns:
+    - stored_texts: The list of stored texts.
+    """
+    return {"stored_texts": stored_texts}
 
 # Endpoint for dyslexia classification
-@app.post("/classify-dyslexia")
-def classify_dyslexia(text: str):
-    """
-    Endpoint to classify text for dyslexia.
-
-    Parameters:
-    - text: The text to be classified.
-
-    Returns:
-    - result: The classification result.
-    """
-    try:
-        if text.endswith('.pdf'):
-            text = extract_text_from_pdf(text)
-        elif text.startswith('http'):
-            text = extract_text_from_website(text)
-        chunks = chunk_text(text)
-        results = []
-        for chunk in chunks:
-            # Preprocess your text and extract features
-            dyslexia_data = DyslexiaData(chunk)
-            X_test_text = dyslexia_data.preprocess_text(chunk)
-            prediction = model.predict(X_test_text)
-            results.append(prediction)
-    except Exception as e:
+#@app.post("/classify-dyslexia")
+#def classify_dyslexia(text: str):
+#    """
+#    Endpoint to classify text for dyslexia.
+#
+#    Parameters:
+#    - text: The text to be classified.
+#
+#    Returns:
+#    - result: The classification result.
+#    """
+#    try:
+#        if text.endswith('.pdf'):
+#            text = extract_text_from_pdf(text)
+#        elif text.startswith('http'):
+#            text = extract_text_from_website(text)
+#        chunks = chunk_text(text)
+#        results = []
+#        for chunk in chunks:
+#            # Preprocess your text and extract features
+#            dyslexia_data = DyslexiaData(chunk)
+#            X_test_text = dyslexia_data.preprocess_text(chunk)
+#            prediction = model.predict(X_test_text)
+#            results.append(prediction)
+#    except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
-        raise HTTPException(status_code=500, detail=str(e))
+#        raise HTTPException(status_code=500, detail=str(e))
 
 # Endpoint for text simplification
-@app.post("/simplify-text")
-def simplify_text_endpoint(text: str):
-    """
-    This endpoint takes a string of text as input and returns a simplified version of the text.
-    The simplification process is designed to make the text easier to read for dyslexic readers.
-
-    Parameters:
-    text (str): The text to be simplified. This should be a string of text.
-
-    Returns:
-    dict: A dictionary with a single key-value pair. The key is 'result' and the value is the simplified text (str).
-    """
-    try:
-        simplified_text = simplify_text(text)
-        return {"result": simplified_text}
-    except Exception as e:
+#@app.post("/simplify-text")
+#def simplify_text_endpoint(text: str):
+#    """
+#    This endpoint takes a string of text as input and returns a simplified version of the text.
+#    The simplification process is designed to make the text easier to read for dyslexic readers.
+#
+#    Parameters:
+#    text (str): The text to be simplified. This should be a string of text.
+#
+#    Returns:
+#    dict: A dictionary with a single key-value pair. The key is 'result' and the value is the simplified text (str).
+#    """
+#    try:
+#        simplified_text = simplify_text(text)
+#        return {"result": simplified_text}
+#    except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
-        raise HTTPException(status_code=500, detail=str(e))
+#        raise HTTPException(status_code=500, detail=str(e))
 
 # Default endpoint
 @app.get("/")
