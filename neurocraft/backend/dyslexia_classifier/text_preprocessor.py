@@ -37,9 +37,3 @@ class EmbeddingCreator:
         tokenized_excerpts = self.tokenizer(excerpts, max_length=self.max_length, padding="max_length", truncation=True, return_tensors="tf")
         embeddings = self.model.predict(tokenized_excerpts["input_ids"])
         return embeddings.last_hidden_state
-
-# # Assuming X_train_text and X_test_text are lists of sentences/excerpts
-# with tf.device('GPU:0'):  # Change to '/CPU:0' if you want to use CPU
-#     embedding_creator = EmbeddingCreator()
-#     X_train_text = embedding_creator.create_embeddings(X_train_text)
-#     X_test_text = embedding_creator.create_embeddings(X_test_text)
