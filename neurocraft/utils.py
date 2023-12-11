@@ -9,6 +9,17 @@ from bs4 import BeautifulSoup
 from neurocraft.params import *
 
 def plot_confusion_matrix(y_true, y_pred, labels_dict):
+    """
+    Plot the confusion matrix.
+
+    Args:
+    - y_true (array-like): True labels.
+    - y_pred (array-like): Predicted labels.
+    - labels_dict (dict): Dictionary mapping label indices to label names.
+
+    Returns:
+    - None
+    """
     cm = confusion_matrix(y_true, y_pred)
     fig, ax = plt.subplots(figsize=(15,15))
     sns.heatmap(cm, annot=True, ax=ax, cmap='Blues', fmt='g')
@@ -48,20 +59,38 @@ def extract_text_from_pdf(file_path):
     Returns:
     - str: Text extracted from the PDF.
     """
-    pdf_file_obj = open(file_path, 'rb')
-    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
-    text = ''
-    for page_num in range(pdf_reader.numPages):
-        page_obj = pdf_reader.getPage(page_num)
-        text += page_obj.extractText()
-    pdf_file_obj.close()
-    return text
+    try:
+        pdf_file_obj = open(file_path, 'rb')
+        pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+        text = ''
+        for page_num in range(pdf_reader.numPages):
+            page_obj = pdf_reader.getPage(page_num)
+            text += page_obj.extractText()
+        return text
+    except Exception as e:
+        print(f"Error extracting text from PDF: {e}")
+        return None
+    finally:
+        pdf_file_obj.close()
 
 def extract_text_from_website(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
-    return text
+    """
+    Extract text from a website.
+
+    Args:
+    - url (str): URL of the website.
+
+    Returns:
+    - str: Text extracted from the website.
+    """
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        text = ' '.join(map(lambda p: p.text, soup.find_all('p')))
+        return text
+    except Exception as e:
+        print(f"Error extracting text from website: {e}")
+        return None
 
 #def compute_precision(y_true, y_pred):
     #return precision_score(y_true, y_pred)

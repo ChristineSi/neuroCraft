@@ -25,6 +25,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+
 # Store submitted texts in a list for demonstration purposes
 stored_texts = []
 

@@ -10,8 +10,8 @@ from pathlib import Path
 from neurocraft.params import *
 
 class DyslexiaData:
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self):
+        self.file_path = "raw_data/CLEAR Corpus 6.01 - CLEAR Corpus 6.01.csv"
         self.data = self.load_data()
         self.feature_engineer = FeatureEngineer()
         self.text_preprocessor = TextPreprocessor()
@@ -87,12 +87,15 @@ class DyslexiaData:
         X = self.data.drop(columns=['BT Easiness'])
         y = self.data['BT Easiness']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
         # Separate the 'Excerpt' column from the training and testing sets
         X_train_text = X_train['Excerpt']
         X_test_text = X_test['Excerpt']
+
         # Drop the 'Excerpt' column from the training and testing sets
         X_train_num = X_train.drop(columns=['Excerpt'])
         X_test_num = X_test.drop(columns=['Excerpt'])
+
         return X_train_num, X_test_num, X_train_text, X_test_text, y_train, y_test
 
     def embed_and_pad_data(self, X_train_text, X_test_text):
