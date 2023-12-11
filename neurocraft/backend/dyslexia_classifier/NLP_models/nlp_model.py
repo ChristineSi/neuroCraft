@@ -10,13 +10,19 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, Learnin
 from tensorflow.keras.constraints import MaxNorm
 from tensorflow.keras.regularizers import l1_l2, l2
 
+# gpu is slower for this challenge
+# Disable GPUs:
+import tensorflow as tf
+tf.config.set_visible_devices([], 'GPU')
+
 # for other files, use -> from nlp_model import NLPModel
 
 class NLPModel:
-    def __init__(self, X, y):
+    def __init__(self, X, y, input_shape):
         self.X = X
         self.y = y
-        self.model = self.build_model()
+        self.input_shape = input_shape
+        self.model = self.build_model(input_shape)
         self.es = EarlyStopping(patience=10, restore_best_weights=True)
         self.reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.0001)
         self.lr_scheduler = LearningRateScheduler(self.scheduler)
@@ -27,7 +33,7 @@ class NLPModel:
         else:
             return lr * tf.math.exp(-0.1)
 
-    def build_model(self, input_shape=self.X.shape[1:]):
+    def build_model(self, input_shape):
         input_nlp = layers.Input(shape=input_shape)
         x = layers.Bidirectional(layers.LSTM(32, kernel_constraint=MaxNorm(3), return_sequences=True, kernel_regularizer=l2(0.01)))(input_nlp)
         x = layers.Dropout(0.5)(x)
