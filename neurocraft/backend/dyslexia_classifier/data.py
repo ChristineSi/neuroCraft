@@ -29,14 +29,14 @@ class DyslexiaData:
         Preprocesses the input text for dyslexia classification and text simplification.
         """
         drop_columns = ['Last Changed', 'URL', 'Anthology', 'MPAA \n#Max', 'Pub Year', 'MPAA\n#Avg', 'License', 'British Words', 'firstPlace_pred', 'secondPlace_pred', 'thirdPlace_pred',
-                        'fourthPlace_pred', 'fifthPlace_pred', 'sixthPlace_pred', 'ID', 'Author', 'Title', 'Source', 'Category', 'Location', 'MPAA\nMax', 'BT s.e.', 'Kaggle split']
+       'fourthPlace_pred', 'fifthPlace_pred', 'sixthPlace_pred', 'ID', 'Author', 'Title', 'Source', 'Category', 'Location', 'MPAA\nMax', 'BT s.e.', 'Kaggle split']
         self.data = self.data.drop(columns=drop_columns)
 
-        # Calculating quantiles for bin edges - 7 edges for 6 bins
-        quantiles = self.data['BT Easiness'].quantile([0, 0.1667, 0.3333, 0.5, 0.6667, 0.8333, 1]).tolist()
+        # Calculating quantiles for bin edges
+        quantiles = self.data['BT Easiness']..quantile([0, 0.3333, 0.6667, 1]).tolist()
 
-        # Correct number of labels for 6 bins
-        labels_dict = {'very hard':0, 'hard':1, 'moderately hard':2, 'acceptable':3, 'easy':4, 'very easy':5}
+        # Correct number of labels for 3 bins
+        labels_dict = {'hard':0, 'acceptable':1, 'easy':2}
 
         # Using 'quantiles' for bins and including 6 labels
         self.data['BT Easiness'] = pd.cut(
@@ -86,14 +86,11 @@ class DyslexiaData:
         """
         X = self.data.drop(columns=['BT Easiness'])
         y = self.data['BT Easiness']
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         # Separate the 'Excerpt' column from the training and testing sets
         X_train_text = X_train['Excerpt']
         X_test_text = X_test['Excerpt']
-        # Drop the 'Excerpt' column from the training and testing sets
-        X_train_num = X_train.drop(columns=['Excerpt'])
-        X_test_num = X_test.drop(columns=['Excerpt'])
-        return X_train_num, X_test_num, X_train_text, X_test_text, y_train, y_test
+        return X_train_text, X_test_text, y_train, y_test
 
     def embed_and_pad_data(self, X_train_text, X_test_text):
         """
