@@ -56,7 +56,8 @@ class TextSimplificationModel:
         Whatever qualities he might possess for the important work about to be devolved upon him would be developed later."
 
 
-        You will base the simplified version of {text} on the following 3 examples as a benchmark for dyslexic readers.
+        Please simplify {text} basing yourself on the following 3 examples which can be considered as a benchmark for dyslexic readers.
+        In your response include only the simplified text and nothing else.
 
         These are illustrations of the simplified level of the text:
 

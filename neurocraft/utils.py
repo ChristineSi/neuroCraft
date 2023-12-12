@@ -51,12 +51,22 @@ def chunk_text(text, max_chunk_size=200):
 
     for word in words:
         # Check if adding the current word exceeds the max_chunk_size
-        if len(current_chunk.split()) + 1 <= max_chunk_size:
+        if len(current_chunk.split()) + len(word.split()) <= max_chunk_size:
             current_chunk += ' ' + word
         else:
-            # Add the current chunk to the list
-            chunks.append(current_chunk.strip())
-            current_chunk = word
+            # Check if the last character in the current_chunk is a sentence-ending punctuation
+            if current_chunk[-1] in ['.', '!', '?']:
+                chunks.append(current_chunk.strip())
+                current_chunk = word
+            else:
+                # If not, find the last sentence-ending punctuation and create a new chunk
+                last_sentence_end = max(current_chunk.rfind('.'), current_chunk.rfind('!'), current_chunk.rfind('?'))
+                if last_sentence_end != -1:
+                    chunks.append(current_chunk[:last_sentence_end + 1].strip())
+                    current_chunk = current_chunk[last_sentence_end + 1:] + ' ' + word
+                else:
+                    chunks.append(current_chunk.strip())
+                    current_chunk = word
 
     # Add the last chunk
     chunks.append(current_chunk.strip())

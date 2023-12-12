@@ -2,20 +2,17 @@ import os
 import openai
 import traceback
 from fastapi import FastAPI, UploadFile, HTTPException
+from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from neurocraft.backend.text_simplification.simplification_model import TextSimplificationModel
 from neurocraft.utils import extract_text_from_pdf, extract_text_from_website, chunk_text
-#from neurocraft.backend.dyslexia_classifier.classification_model import NLPModel
-#from neurocraft.backend.dyslexia_classifier.mock_model import MockModel
-from interface.main import pred, load_model
+from neurocraft.interface.main import pred
+
 app = FastAPI()
 #app.state.model
 
-# Create instances of the classification and simplification models
-model = load_model()
 openai.api_key = os.getenv("API_KEY")
 simplification_model = TextSimplificationModel()
-
 
 # Middleware in FastAPI is code that runs befre processing the request and after processing the response
 # CORS: Cross-Origin Resource Sharing
@@ -28,7 +25,277 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+#Endpoit to classify text
+@app.get("/prediction-only")
+def prediction_only(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
 
+        # Classify each chunk based on the predictions
+        predictions = []
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Return a dictionary with average prediction and predictions for each chunk
+        return {
+            "average_prediction": average_prediction,
+            "predictions": predictions,
+        }
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+#http://localhost:8000/average-prediction
+@app.get("/average-prediction")
+def average_prediction(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
+
+        # Classify each chunk based on the predictions
+        predictions = []
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Return a dictionary with only the average prediction
+        return average_prediction
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+# http://localhost:8000/simplified-text
+@app.get("/simplified-text")
+def simplified_text(text: str):
+    try:
+        # Chunk the text before simplifying
+        text_chunks = chunk_text(text)
+
+        # Simplify each chunk using your simplification_model
+        simplified_texts = []
+        for chunk in text_chunks:
+            simplified_chunk = simplification_model.simplify_text(chunk)
+            simplified_texts.append(simplified_chunk)
+
+        # Return only the simplified texts
+        return simplified_texts
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+# http://localhost:8000/classify-simplify
+@app.get("/classify-simplify")
+def classify_simplify(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
+
+        # Classify and simplify each chunk based on the predictions
+        predictions = []
+        simplified_texts = []
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+
+        simplified_texts = simplification_model.simplify_text(text)
+
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Return a dictionary with only the average prediction and simplified texts
+        return average_prediction, simplified_texts
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/all-text")
+def all_text(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
+
+        # Classify and simplify each chunk based on the predictions
+        predictions = []
+        simplified_texts = []
+        simplified_text_predictions = []  # Store predictions for simplified texts
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+
+            # Simplify each chunk using your simplification_model
+            simplified_chunk = simplification_model.simplify_text(chunk)
+            simplified_texts.append(simplified_chunk)
+
+            # Predict the difficulty of the simplified text
+            simplified_text_prediction = pred(X_pred=simplified_chunk)
+            simplified_text_predictions.append(int(simplified_text_prediction))
+
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Calculate the average prediction for the simplified texts
+        average_simplified_text_prediction = int(sum(simplified_text_predictions) / len(simplified_text_predictions))
+
+        # Return a dictionary with average predictions and simplified texts for each chunk
+        return {
+            "average_prediction": average_prediction,
+            "average_simplified_text_prediction": average_simplified_text_prediction,
+            "predictions": predictions,
+            "simplified_texts": simplified_texts,
+            "simplified_text_predictions": simplified_text_predictions
+        }
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+# http://localhost:8000/simplify-chunk
+@app.get("/simplify-chunk")
+def simplify_chunk(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
+
+        # Classify each chunk based on the predictions
+        predictions = []
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Simplify the entire text
+        simplified_text = simplification_model.simplify_text(text)
+
+        # Chunk the simplified text before making predictions
+        simplified_text_chunks = chunk_text(simplified_text)
+
+        # Classify each chunk of the simplified text
+        simplified_predictions = []
+        for i, chunk in enumerate(simplified_text_chunks):
+            # Classify each chunk using your pred function
+            simplified_prediction = pred(X_pred=chunk)
+            simplified_predictions.append(int(simplified_prediction))
+
+        # Calculate the average prediction for the simplified text
+        average_simplified_prediction = int(sum(simplified_predictions) / len(simplified_predictions))
+
+        # Return a dictionary with only the average prediction and simplified text
+        return predictions, average_prediction, simplified_text, simplified_predictions, average_simplified_prediction
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+#1. chunk the text -> do predictions and average of predictions -> simplify the chunked text -> do predictions on the chunked_simplified_texts and average of these predictions
+@app.get("/scenario-1")
+def scenario_1(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
+
+        # Classify each chunk based on the predictions
+        predictions = []
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Simplify the entire text
+        simplified_text = simplification_model.simplify_text(text)
+
+        # Chunk the simplified text before making predictions
+        simplified_text_chunks = chunk_text(simplified_text)
+
+        # Classify each chunk of the simplified text
+        simplified_predictions = []
+        for i, chunk in enumerate(simplified_text_chunks):
+            # Classify each chunk using your pred function
+            simplified_prediction = pred(X_pred=chunk)
+            simplified_predictions.append(int(simplified_prediction))
+
+        # Calculate the average prediction for the simplified text
+        average_simplified_prediction = int(sum(simplified_predictions) / len(simplified_predictions))
+
+        # Return a dictionary with the required information
+        return {
+            "predictions": predictions,
+            "average_prediction": average_prediction,
+            "simplified_text": simplified_text,
+            "simplified_text_predictions": simplified_predictions,
+            "average_simplified_prediction": average_simplified_prediction,
+            "simplified_text_chunks": simplified_text_chunks
+        }
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+#2. chunk the text -> do predictions and average of predictions -> simplify the original text -> chunk the simplified text -> do predictions of chunked_simplified_texts and average of these predictions
+@app.get("/scenario-2")
+def scenario_2(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
+
+        # Classify and simplify each chunk based on the predictions
+        predictions = []
+        simplified_texts = []
+        simplified_predictions = []
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+
+            # Simplify each chunk using your simplification_model
+            simplified_chunk = simplification_model.simplify_text(chunk)
+            simplified_texts.append(simplified_chunk)
+
+            # Predict the difficulty of the simplified text
+            simplified_prediction = pred(X_pred=simplified_chunk)
+            simplified_predictions.append(int(simplified_prediction))
+
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Calculate the average prediction for the simplified texts
+        average_simplified_prediction = int(sum(simplified_predictions) / len(simplified_predictions))
+
+        # Return a dictionary with the required information
+        return {
+            "predictions": predictions,
+            "average_prediction": average_prediction,
+            "simplified_texts": simplified_texts,
+            "simplified_text_predictions": simplified_predictions,
+            "average_simplified_prediction": average_simplified_prediction
+        }
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+'''
 # Endpoint for dyslexia classification
 @app.get("/classify-dyslexia")
 async def classify_dyslexia(
@@ -81,13 +348,12 @@ async def classify_dyslexia(
         # Print the full traceback of the exception
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-'''
-# Endpoint for text simplification
-@app.get("/simplify-text")
+
+@app.post("/simplify-text")
 async def simplify_text(
-    text: str = None,
+    text: Optional[str] = None,
     file: UploadFile = None,
-    url: str = None
+    url: Optional[str] = None
 ):
     """
     This endpoint takes text, a file, or a URL as input and returns a simplified version of the text.
@@ -116,8 +382,22 @@ async def simplify_text(
         if isinstance(content, bytes) and file.filename.endswith('.pdf'):
             content = extract_text_from_pdf(content)
 
-        # Simplify the text using the simplification model
-        simplified_text = simplification_model.simplify_text(content)
+        # Pass the extracted text through the chunk_text function
+        text_chunks = chunk_text(content)
+
+        # Check if text_chunks is None or empty
+        if text_chunks is None or not text_chunks:
+            raise HTTPException(status_code=400, detail="Unable to extract text chunks from the provided content.")
+
+        # Classify each text chunk using the classification model
+        classification_results = [pred(X_pred=chunk) for chunk in text_chunks if chunk]
+
+        # Check if classification_results is None or empty
+        if classification_results is None or not classification_results:
+            raise HTTPException(status_code=400, detail="Unable to classify text chunks.")
+
+        # Combine the classified chunks into a single string
+        simplified_text = " ".join(classification_results)
 
         return {"simplified_text": simplified_text}
     except Exception as e:
