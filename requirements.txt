@@ -32,3 +32,11 @@ pathlib
 colorama
 transformers
 torch
+pathlib
+os
+glob
+time
+pickle
+re
+string
+nltk
