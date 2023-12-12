@@ -4,40 +4,45 @@
 
 #      Standard version
 #FROM python:3.10
-FROM python:3.8.10
+FROM python:3.10.6-buster
 
 #      Slim version
 #FROM python:3.10-slim
 
 #      Tensorflow version
-FROM tensorflow/tensorflow:2.13.0
+# FROM tensorflow/tensorflow:2.13.0
 
 #      Or tensorflow to run on Apple Silicon (M1 / M2)
 # FROM armswdev/tensorflow-arm-neoverse:r23.08-tf-2.13.0-eigen
 
-WORKDIR /app
+WORKDIR /prod
 # Copy everything we need into the image
-COPY neurocraft neurocraft
+
 #COPY api api
 #COPY scripts scripts
 #COPY requirements.txt requirements_docker.txt
 COPY requirements_dev.txt requirements.txt
+RUN pip install -r requirements.txt
+
+COPY neurocraft neurocraft
 COPY setup.py setup.py
 #COPY credentials.json credentials.json
 
 # Install everything
 RUN pip install --upgrade pip
 #RUN pip install -r requirements.txt requirements_docker.txt
-RUN pip install -r requirements.txt
+
 RUN pip install .
 
+COPY Makefile Makefile
+RUN make reset_local_files
 # Make directories that we need, but that are not included in the COPY
 #RUN mkdir raw_data
 #RUN mkdir models
 
-# Install Uvicorn
-RUN pip install uvicorn
-RUN pip install fastapi
+# # Install Uvicorn
+# RUN pip install uvicorn
+# RUN pip install fastapi
 
 # TODO: to speed up, you can load your model from MLFlow or Google Cloud Storage at startup using
 # RUN python -c 'replace_this_with_the_commands_you_need_to_run_to_load_the_model'
