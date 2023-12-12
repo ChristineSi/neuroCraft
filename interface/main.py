@@ -20,7 +20,7 @@ def training_flow():
 
     # file_path = Path(LOCAL_DATA_PATH).joinpath("raw", "CLEAR Corpus 6.01 - CLEAR Corpus 6.01.csv")
     # file_path = os.path.join(os.path.expanduser('~'), 'code', 'AndreaCalcagni', 'neuroCraft', 'raw_data', 'CLEAR Corpus 6.01 - CLEAR Corpus 6.01.csv')
-    file_path= os.path.join(os.path.dirname(os.getcwd()), 'neurocraft', 'raw_data', 'CLEAR Corpus 6.01 - CLEAR Corpus 6.01.csv')
+    file_path= os.path.join(os.path.dirname(os.getcwd()), 'neuroCraft', 'raw_data', 'CLEAR Corpus 6.01 - CLEAR Corpus 6.01.csv')
 
     df = load_data(file_path)
 
