@@ -11,7 +11,7 @@ import tensorflow as tf
 tf.config.set_visible_devices([], 'GPU')
 
 from neurocraft.backend.dyslexia_classifier.data import load_data, preprocess_train_test_data, preprocess_text, embed_data, define_X_y, split_data
-from neurocraft.backend.dyslexia_classifier.NLP_models.nlp_model import NLPModel
+from neurocraft.backend.dyslexia_classifier.nlp_model import NLPModel
 from neurocraft.backend.dyslexia_classifier.registry import save_model, load_model
 from neurocraft.params import *
 
