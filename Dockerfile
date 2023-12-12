@@ -21,7 +21,7 @@ WORKDIR /prod
 #COPY api api
 #COPY scripts scripts
 #COPY requirements.txt requirements_docker.txt
-COPY requirements_dev.txt requirements.txt
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY neurocraft neurocraft
