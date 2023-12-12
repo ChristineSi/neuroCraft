@@ -26,10 +26,10 @@ reset_local_files:
 	mkdir ~/.lewagon/neuroCraft/training_outputs/params
 
 run_training_flow:
-	python -c 'from interface.main import training_flow; training_flow()'
+	python -c 'from neurocraft.interface.main import training_flow; training_flow()'
 
 run_pred:
-	python -c 'from interface.main import pred; pred()'
+	python -c 'from neurocraft.interface.main import pred; pred()'
 
 clean:
 	@rm -f */version.txt
