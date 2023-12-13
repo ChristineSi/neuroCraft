@@ -60,7 +60,7 @@ def prediction_only(text: str):
         raise HTTPException(status_code=500, detail=str(e))
 '''
 #http://localhost:8000/average-prediction
-@app.get("/average-prediction")
+@app.post("/average-prediction")
 def average_prediction(text: str):
     try:
         # Chunk the text before making predictions
@@ -84,7 +84,7 @@ def average_prediction(text: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 # http://localhost:8000/simplified-text
-@app.get("/simplified-text")
+@app.post("/simplified-text")
 def simplified_text(text: str):
     try:
         # Chunk the text before simplifying
@@ -104,7 +104,7 @@ def simplified_text(text: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 # http://localhost:8000/classify-simplify
-@app.get("/classify-simplify")
+@app.post("/classify-simplify")
 def classify_simplify(text: str):
     try:
         # Chunk the text before making predictions
