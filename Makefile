@@ -92,6 +92,9 @@ docker_build:
 		--platform linux/amd64 \
 		-t $(DOCKER_IMAGE_PATH):prod .
 
+docker_build_mac:
+	docker build --platform linux/amd64 -t $(GAR_IMAGE):light-intel .
+
 # Alternative if previous doesn´t work. Needs additional setup.
 # Probably don´t need this. Used to build arm on linux amd64
 docker_build_alternative:
