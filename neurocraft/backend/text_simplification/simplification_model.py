@@ -7,7 +7,7 @@ class TextSimplificationModel:
         # Implement your text simplification logic here
         # Return the simplified text
 
-        openai.api_key  = os.getenv("API_KEY")
+        openai.api_key  = os.getenv("OPENAI_API_KEY")
 
         def get_completion(prompt, model="gpt-3.5-turbo"):
             messages = [{"role": "user", "content": prompt}]

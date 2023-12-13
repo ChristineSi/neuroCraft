@@ -7,11 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from neurocraft.backend.text_simplification.simplification_model import TextSimplificationModel
 from neurocraft.utils import extract_text_from_pdf, extract_text_from_website, chunk_text
 from neurocraft.interface.main import pred
+from dotenv import load_dotenv
 
 app = FastAPI()
 #app.state.model
 
-openai.api_key = os.getenv("API_KEY")
+
+
+load_dotenv()
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# openai.api_key = os.getenv("API_KEY")
 simplification_model = TextSimplificationModel()
 
 # Middleware in FastAPI is code that runs befre processing the request and after processing the response
