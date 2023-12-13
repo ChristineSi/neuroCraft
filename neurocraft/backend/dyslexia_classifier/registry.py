@@ -49,18 +49,30 @@ def load_model(stage="Production") -> keras.Model:
     if MODEL_TARGET == "local":
         print(Fore.BLUE + f"\nLoad latest model from local registry..." + Style.RESET_ALL)
 
-        # Get the latest model version name by the timestamp on disk
-        local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
-        local_model_paths = glob.glob(f"{local_model_directory}/*")
+        # # Get the latest model version name by the timestamp on disk
+        # local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+        # local_model_paths = glob.glob(f"{local_model_directory}/*")
 
-        if not local_model_paths:
-            return None
+        # if not local_model_paths:
+        #     return None
 
-        most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
+        # most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
 
-        print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
+        # print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
 
-        latest_model = keras.models.load_model(most_recent_model_path_on_disk)
+        # latest_model = keras.models.load_model(most_recent_model_path_on_disk)
+
+
+        # Get the directory of the current file (registry.py)
+        current_dir = os.path.dirname(__file__)
+
+        # Move up two directories to the root of your project
+        project_root = os.path.dirname(os.path.dirname(current_dir))
+
+        # Define the path to the .h5 file relative to the project root
+        h5_file_path = os.path.join(project_root, 'model', '20231212-100653.h5')
+
+        latest_model = keras.models.load_model(h5_file_path)
 
         print("✅ Model loaded from local disk")
 

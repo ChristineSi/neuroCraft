@@ -28,6 +28,7 @@ COPY neurocraft neurocraft
 COPY setup.py setup.py
 #COPY credentials.json credentials.json
 
+ENV LD_PRELOAD=/usr/local/lib/python3.10/site-packages/torch.libs/libgomp-6e1a1d1b.so.1.0.0
 # Install everything
 RUN pip install --upgrade pip
 #RUN pip install -r requirements.txt requirements_docker.txt
@@ -36,6 +37,8 @@ RUN pip install .
 
 COPY Makefile Makefile
 RUN make reset_local_files
+
+# RUN apt-get update && apt-get install -y libtbb2 libtbb-dev
 # Make directories that we need, but that are not included in the COPY
 #RUN mkdir raw_data
 #RUN mkdir models
