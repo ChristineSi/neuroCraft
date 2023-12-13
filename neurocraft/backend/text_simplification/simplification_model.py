@@ -56,8 +56,8 @@ class TextSimplificationModel:
         Whatever qualities he might possess for the important work about to be devolved upon him would be developed later."
 
         Please simplify {text} basing yourself on the following 3 examples, which can be considered as a benchmark for dyslexic readers.
-        Please use these guidelines: use short and simple sentences (60-70 characters), prefer active voice, avoid long paragraph,
-        avoid unnecessary jargon, maintain the original structure and meaning, ensure coherence and logical flow, include only the simplified text in your response.
+        Please use these guidelines: use short and simple sentences (60-70 characters), prefer active voice,
+        avoid unnecessary jargon, keep almost the same words number, include only the simplified text in your response.
 
         These are illustrations of the simplified level of the text:
 
