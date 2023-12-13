@@ -25,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-#Endpoit to classify text
+'''
 @app.get("/prediction-only")
 def prediction_only(text: str):
     try:
@@ -51,7 +51,7 @@ def prediction_only(text: str):
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
-
+'''
 #http://localhost:8000/average-prediction
 @app.get("/average-prediction")
 def average_prediction(text: str):
@@ -122,7 +122,7 @@ def classify_simplify(text: str):
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
-
+'''
 @app.get("/all-text")
 def all_text(text: str):
     try:
@@ -204,21 +204,20 @@ def simplify_chunk(text: str):
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
-
+'''
+#The following endpoint is for the neuroCraft demo
 #1. chunk the text -> do predictions and average of predictions -> simplify the chunked text -> do predictions on the chunked_simplified_texts and average of these predictions
-@app.get("/scenario-1")
-def scenario_1(text: str):
+@app.get("/neurocraft")
+def neurocraft(text: str):
     try:
         # Chunk the text before making predictions
         text_chunks = chunk_text(text)
-
         # Classify each chunk based on the predictions
         predictions = []
         for i, chunk in enumerate(text_chunks):
             # Classify each chunk using your pred function
             prediction = pred(X_pred=chunk)
             predictions.append(int(prediction))
-
         # Calculate the average prediction
         average_prediction = int(sum(predictions) / len(predictions))
 
@@ -245,13 +244,12 @@ def scenario_1(text: str):
             "simplified_text": simplified_text,
             "simplified_text_predictions": simplified_predictions,
             "average_simplified_prediction": average_simplified_prediction,
-            "simplified_text_chunks": simplified_text_chunks
         }
 
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
-
+'''
 #2. chunk the text -> do predictions and average of predictions -> simplify the original text -> chunk the simplified text -> do predictions of chunked_simplified_texts and average of these predictions
 @app.get("/scenario-2")
 def scenario_2(text: str):
@@ -295,6 +293,7 @@ def scenario_2(text: str):
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
 
+'''
 '''
 # Endpoint for dyslexia classification
 @app.get("/classify-dyslexia")
