@@ -249,6 +249,50 @@ def neurocraft(text: str):
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/neurocraft")
+def neurocraft(text: str):
+    try:
+        # Chunk the text before making predictions
+        text_chunks = chunk_text(text)
+        # Classify each chunk based on the predictions
+        predictions = []
+        for i, chunk in enumerate(text_chunks):
+            # Classify each chunk using your pred function
+            prediction = pred(X_pred=chunk)
+            predictions.append(int(prediction))
+        # Calculate the average prediction
+        average_prediction = int(sum(predictions) / len(predictions))
+
+        # Simplify the entire text
+        simplified_text = simplification_model.simplify_text(text)
+
+        # Chunk the simplified text before making predictions
+        simplified_text_chunks = chunk_text(simplified_text)
+
+        # Classify each chunk of the simplified text
+        simplified_predictions = []
+        for i, chunk in enumerate(simplified_text_chunks):
+            # Classify each chunk using your pred function
+            simplified_prediction = pred(X_pred=chunk)
+            simplified_predictions.append(int(simplified_prediction))
+
+        # Calculate the average prediction for the simplified text
+        average_simplified_prediction = int(sum(simplified_predictions) / len(simplified_predictions))
+
+        # Return a dictionary with the required information
+        return {
+            "predictions": predictions,
+            "average_prediction": average_prediction,
+            "simplified_text": simplified_text,
+            "simplified_text_predictions": simplified_predictions,
+            "average_simplified_prediction": average_simplified_prediction,
+        }
+
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
 '''
 #2. chunk the text -> do predictions and average of predictions -> simplify the original text -> chunk the simplified text -> do predictions of chunked_simplified_texts and average of these predictions
 @app.get("/scenario-2")
@@ -455,6 +499,11 @@ async def classify_simplify_dyslexia(
         raise HTTPException(status_code=500, detail=str(e))
 
 '''
+
+
+
+
+
 # Default endpoint
 @app.get("/")
 def root():
