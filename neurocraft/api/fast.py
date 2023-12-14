@@ -65,19 +65,38 @@ def average_prediction(text: str):
     try:
         # Chunk the text before making predictions
         text_chunks = chunk_text(text)
-
         # Classify each chunk based on the predictions
         predictions = []
         for i, chunk in enumerate(text_chunks):
             # Classify each chunk using your pred function
             prediction = pred(X_pred=chunk)
             predictions.append(int(prediction))
-
         # Calculate the average prediction
         average_prediction = int(sum(predictions) / len(predictions))
-
         # Return a dictionary with only the average prediction
         return average_prediction
+    except Exception as e:
+        # Handle exceptions, e.g., model not loaded or input validation error
+        raise HTTPException(status_code=500, detail=str(e))
+
+#@app.post("/average-prediction")
+#def average_prediction(text: str):
+#    try:
+#        # Chunk the text before making predictions
+#        text_chunks = chunk_text(text)
+#
+#        # Classify each chunk based on the predictions
+#        #predictions = []
+#        #for i, chunk in enumerate(text_chunks):
+#        #    # Classify each chunk using your pred function
+#        #    prediction = pred(X_pred=chunk)
+#        #    predictions.append(int(prediction))
+##
+#        # Calculate the average prediction
+#        # average_prediction = int(sum(predictions) / len(predictions))
+#
+#        # Return a dictionary with only the average prediction
+#        return {"classification": 1}
 
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
