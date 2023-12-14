@@ -75,7 +75,7 @@ def create_simplified_pdf(original_text: str, simplified_text: str) -> bytes:
     pdf_buffer = BytesIO()
 
     # Register dyslexia-friendly font
-    dyslexic_font_path = "raw_data/OpenDyslexic-Regular.ttf"  # Update with the correct path
+    dyslexic_font_path = "neurocraft/font/OpenDyslexic-Regular.ttf"  # Update with the correct path
     pdfmetrics.registerFont(TTFont("DyslexicFont", dyslexic_font_path))
 
     # Create a PDF document
