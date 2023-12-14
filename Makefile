@@ -95,6 +95,9 @@ docker_build:
 docker_build_mac:
 	docker build --platform linux/amd64 -t $(GAR_IMAGE):light-intel .
 
+docker_build_gcp:
+	docker build --platform linux/amd64 -t  $(GCP_REGION)-docker.pkg.dev/$(GCP_PROJECT)/neurocraft/$(GAR_IMAGE):prod .
+
 # Alternative if previous doesn´t work. Needs additional setup.
 # Probably don´t need this. Used to build arm on linux amd64
 docker_build_alternative:
@@ -137,3 +140,9 @@ docker_deploy:
 		--memory $(GAR_MEMORY)
 		--region $(GCP_REGION) \
 		--env-vars-file .env.yaml
+
+docker_push_gar:
+	docker push $(GCP_REGION)-docker.pkg.dev/$(GCP_PROJECT)/neurocraft/$(GAR_IMAGE):prod
+
+docker_deploy_gcr:
+	gcloud run deploy --image $(GCP_REGION)-docker.pkg.dev/$(GCP_PROJECT)/neurocraft/$(GAR_IMAGE):prod --memory $(GAR_MEMORY) --region $(GCP_REGION) --env-vars-file .env.yaml
