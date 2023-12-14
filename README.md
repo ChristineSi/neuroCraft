@@ -1,4 +1,4 @@
-![neuroCraft](raw_data/NeuroCraft_creamy.png)
+![neuroCraft](NeuroCraft.png)
 **LeWagon** - Data Science Project.
 <br>
 <br>
