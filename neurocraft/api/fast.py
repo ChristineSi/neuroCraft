@@ -14,6 +14,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import simpleSplit
 from reportlab.lib import colors
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 app = FastAPI()
 #app.state.model
@@ -65,7 +67,7 @@ def wrap_text(text, max_width, canvas, font_size):
     return lines
 
 def set_background(canvas):
-    canvas.setFillColor('#fffdd0')  # Set background color to cream
+    canvas.setFillColor('#F4F4EC')  # Set background color to cream (cream-yellow #fffdd0)
     canvas.rect(0, 0, letter[0], letter[1], fill=True, stroke=False)
 
 def create_simplified_pdf(original_text: str, simplified_text: str) -> bytes:
@@ -73,15 +75,15 @@ def create_simplified_pdf(original_text: str, simplified_text: str) -> bytes:
     pdf_buffer = BytesIO()
 
     # Register dyslexia-friendly font
-    #dyslexic_font_path = "path/to/your/dyslexic/font.ttf"  # Update with the correct path
-    #pdfmetrics.registerFont(TTFont("DyslexicFont", dyslexic_font_path))
+    dyslexic_font_path = "raw_data/OpenDyslexic-Regular.ttf"  # Update with the correct path
+    pdfmetrics.registerFont(TTFont("DyslexicFont", dyslexic_font_path))
 
     # Create a PDF document
     pdf_canvas = canvas.Canvas(pdf_buffer, pagesize=letter)
 
     # Set dyslexia-friendly font and size
     dyslexia_font_size = 14
-    pdf_canvas.setFont("Times-Roman", dyslexia_font_size)
+    pdf_canvas.setFont("DyslexicFont", dyslexia_font_size)
 
     # Set background color
     set_background(pdf_canvas)
@@ -92,32 +94,18 @@ def create_simplified_pdf(original_text: str, simplified_text: str) -> bytes:
 
     # Add simplified text
     current_height = 700  # Adjust as needed
-    original_paragraphs = [paragraph.strip() for paragraph in original_text.split("\n\n")]
-    simplified_paragraphs = [paragraph.strip() for paragraph in simplified_text.split("\n\n")]
+    simplified_text = simplified_text.replace('\n', ' ')
 
     # Calculate line height based on font size
-    line_height = dyslexia_font_size + 2
+    line_height = dyslexia_font_size * 1.5  # Line spacing of 1.5
 
-    # Iterate through paragraphs
-    for original_paragraph, simplified_paragraph in zip(original_paragraphs, simplified_paragraphs):
-        current_height -= line_height
+    # Add extra space before the first line
+    current_height -= line_height
 
-        # Wrap and add original text
-        wrapped_original_text = wrap_text(original_paragraph, 400, pdf_canvas, dyslexia_font_size - 2)
-        for line in wrapped_original_text:
-            pdf_canvas.drawString(100, current_height, line)
-            current_height -= line_height
-
-        # Add extra space between original and simplified text
-        current_height -= line_height
-
-        # Wrap and add simplified text
-        wrapped_simplified_text = wrap_text(simplified_paragraph, 400, pdf_canvas, dyslexia_font_size - 2)
-        for line in wrapped_simplified_text:
-            pdf_canvas.drawString(100, current_height, line)
-            current_height -= line_height
-
-        # Add extra space between paragraphs
+     # Add simplified text with improved formatting
+    wrapped_simplified_text = wrap_text(simplified_text, 400, pdf_canvas, dyslexia_font_size - 2)
+    for line in wrapped_simplified_text:
+        pdf_canvas.drawString(100, current_height, line)
         current_height -= line_height
 
     # Save the PDF content
@@ -128,6 +116,7 @@ def create_simplified_pdf(original_text: str, simplified_text: str) -> bytes:
 
     return pdf_buffer.read()
 
+#FOR DEMO DAY
 @app.post("/pdf-prediction")
 def pdf_prediction(file: UploadFile = File(...)):
     try:
@@ -153,6 +142,7 @@ def pdf_prediction(file: UploadFile = File(...)):
 
     return average_prediction
 
+#FOR DEMO DAY
 @app.post("/pdf-simplification")
 def pdf_simplification(file: UploadFile = File(...)):
     try:
@@ -182,6 +172,7 @@ def pdf_simplification(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+#TEXT (PDF EXTRACTION IN FRONTEND)
 @app.post("/text-simplification")
 def text_simplification(text: str):
     try:
@@ -195,7 +186,7 @@ def text_simplification(text: str):
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
 
-
+#PREVIOUS FOR TEXT (PDF EXTRACTION IN FRONTEND)
 #http://localhost:8000/average-prediction
 @app.post("/average-prediction")
 def average_prediction(text: str):
@@ -216,29 +207,8 @@ def average_prediction(text: str):
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
 
-#@app.post("/average-prediction")
-#def average_prediction(text: str):
-#    try:
-#        # Chunk the text before making predictions
-#        text_chunks = chunk_text(text)
-#
-#        # Classify each chunk based on the predictions
-#        #predictions = []
-#        #for i, chunk in enumerate(text_chunks):
-#        #    # Classify each chunk using your pred function
-#        #    prediction = pred(X_pred=chunk)
-#        #    predictions.append(int(prediction))
-##
-#        # Calculate the average prediction
-#        # average_prediction = int(sum(predictions) / len(predictions))
-#
-#        # Return a dictionary with only the average prediction
-#        return {"classification": 1}
-
-    except Exception as e:
-        # Handle exceptions, e.g., model not loaded or input validation error
-        raise HTTPException(status_code=500, detail=str(e))
-
+'''
+#PREVIOUS FOR TEXT (PDF EXTRACTION IN FRONTEND)
 #SIMPLIFIED CHUNK PER CHUNK
 # http://localhost:8000/simplified-text
 @app.post("/simplified-text")
@@ -259,7 +229,7 @@ def simplified_text(text: str):
     except Exception as e:
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
-'''
+
 # http://localhost:8000/classify-simplify
 @app.post("/classify-simplify")
 def classify_simplify(text: str):
