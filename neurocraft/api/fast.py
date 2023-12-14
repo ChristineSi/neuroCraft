@@ -195,7 +195,7 @@ def text_simplification(text: str):
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
 
-
+#DEMO DAY
 #http://localhost:8000/average-prediction
 @app.post("/average-prediction")
 def average_prediction(text: str):
@@ -239,6 +239,7 @@ def average_prediction(text: str):
         # Handle exceptions, e.g., model not loaded or input validation error
         raise HTTPException(status_code=500, detail=str(e))
 
+#DEMO DAY
 #SIMPLIFIED CHUNK PER CHUNK
 # http://localhost:8000/simplified-text
 @app.post("/simplified-text")
