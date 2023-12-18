@@ -76,8 +76,6 @@ docker_run_local:
 		--env-file .env \
 		$(GAR_IMAGE):dev
 
-docker_run_local_api:
-	docker run -it -e PORT=8000 -p 8000:8000 $(GAR_IMAGE):dev sh
 
 docker_run_local_interactively:
 	docker run -it \
