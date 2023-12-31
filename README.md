@@ -16,4 +16,4 @@ We are committed to continuous improvement and have identified areas for enhance
 Curious to learn more? Explore our platform [here](https://neurocraft.streamlit.app/)!
 
 ## About
-NeuroCraft was co-created by [Andrea Calcagni](https://github.com/AndreaCalcagni), [Pei-Yu Chen](https://github.com/renee1j), [Patricia Moreno Gaona](https://github.com/patmg-coder) and [Christine Sigrist](https://github.com/ChristineSi) as the final project for the Data Science bootcamp at [Le Wagon](https://www.lewagon.com/) (batch 1451) on December 2023. The code is written in Python, hosted and published with [Streamlit](https://streamlit.io/).
+NeuroCraft was co-created by [Andrea Calcagni](https://github.com/AndreaCalcagni), [Pei-Yu Chen](https://github.com/renee1j), [Patricia Moreno Gaona](https://github.com/patmg-coder) and [Christine Sigrist](https://github.com/ChristineSi) (Project leader) as the final project for the Data Science bootcamp at [Le Wagon](https://www.lewagon.com/) (batch 1451) on December 2023. The code is written in Python, hosted and published with [Streamlit](https://streamlit.io/).
